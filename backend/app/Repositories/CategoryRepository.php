@@ -20,9 +20,8 @@ class CategoryRepository implements CategoryInterface
     public function getCategories()
     {
         try {
-            $categories = Category::get();
-
-            if (!$categories->isEmpty()) {
+            $categories = Category::whereNull("parent_id")->with("children")->get();
+            if ($categories->isEmpty()) {
                 return response()->json(["message" => "No categories to show!"], 404);
             }
             return new CategoryCollection(Category::paginate(8));
@@ -51,7 +50,8 @@ class CategoryRepository implements CategoryInterface
         try {
             $category = Category::create([
                 "name" => $request->name,
-                "icon" => $request->icon
+                "icon" => $request->icon,
+                "parent_id" => $request->parentId,
             ]);
             
             return $this->success([
@@ -62,8 +62,11 @@ class CategoryRepository implements CategoryInterface
         } catch (Exception $e) {
             return $this->error(
                 '',
+                500,
                 'Failed to create category'
             );
+
+            // return $e->getMessage();
         }
     }
 

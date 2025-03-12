@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Http\Resources\V1\CourseCollection;
 use App\Http\Resources\V1\CourseResource;
 use App\Interfaces\CourseInterface;
+use App\Models\Category;
 use App\Models\Course;
 use App\Traits\HttpResponses;
 use Exception;
@@ -17,22 +18,18 @@ class CourseRepository implements CourseInterface
     public function getCourses()
     {
         try {
-            // Fetch courses with their tags and category
             $courses = Course::leftJoin('categories', "courses.category_id", "=", "categories.id")
                 ->leftJoin("course_tag", "courses.id", "=", "course_tag.course_id")
                 ->leftJoin("tags", "course_tag.tag_id", "=", "tags.id")
                 ->select(
-                    "courses.id",
-                    "courses.title",
-                    "courses.description",
-                    "categories.name as category_name",
+                    "courses.*",
+                    "categories.name as categoryName",
                     DB::raw("GROUP_CONCAT(DISTINCT tags.name ORDER BY tags.name SEPARATOR ',') as tag_names")
                 )
-                ->groupBy("courses.id", "categories.name") // Group by course and category only
+                ->groupBy("courses.id", "categories.name")
                 ->orderBy("courses.id", "DESC")
                 ->paginate(8);
     
-            // Transform the tag_names string into an array
             $courses->getCollection()->transform(function ($course) {
                 $course->tag_names = $course->tag_names ? explode(',', $course->tag_names) : [];
                 return $course;
@@ -42,7 +39,11 @@ class CourseRepository implements CourseInterface
                 return response()->json(["message" => "No courses to show!"]);
             }
     
-            return new CourseCollection($courses);
+            $response = [
+                'courses' => new CourseCollection($courses)
+            ];
+    
+            return response()->json($response);
         } catch (Exception $e) {
             return $this->error(
                 '',
@@ -51,7 +52,6 @@ class CourseRepository implements CourseInterface
             );
         }
     }
-
     public function getCourse($course)
     {
         try {
@@ -84,7 +84,7 @@ class CourseRepository implements CourseInterface
                 'teacher_id' => $request->teacherId,
                 'category_id' => $request->categoryId,
             ]);
-            
+
             if ($request->has("tags")) {
                 $course->tags()->attach($request->tags);
             }
