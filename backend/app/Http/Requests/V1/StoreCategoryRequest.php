@@ -23,7 +23,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             "name" => ["required", "string", "unique:categories"],
-            "icon" => ["string"]
+            "icon" => ["string"],
+            // "parentId" => ["string"],
         ];
     }
 }
