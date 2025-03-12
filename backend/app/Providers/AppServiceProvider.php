@@ -10,6 +10,13 @@ use App\Repositories\CourseRepository;
 use App\Repositories\TagRepository;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @OA\Info(
+ * title="E-Learning",
+ * version="1.0.0"    
+ * )
+ */
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,9 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TagInterface::class, TagRepository::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+    
     public function boot(): void
     {
         //
