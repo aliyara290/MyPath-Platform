@@ -57,7 +57,8 @@ class CategoryRepository implements CategoryInterface
             return $this->success([
                 "category" => $category,
                 "message" => "Category added successfully",
-            ]);
+                
+            ], 201);
 
         } catch (Exception $e) {
             return $this->error(
