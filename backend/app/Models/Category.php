@@ -16,6 +16,13 @@ class Category extends Model
     public $incrementing = false;
     protected $fillable = [
         "name",
-        "icon"
+        "icon",
+        "parent_id"
     ];
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, "parent_id");
+    }
+
 }
