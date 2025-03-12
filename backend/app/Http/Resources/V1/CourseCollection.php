@@ -12,6 +12,7 @@ class CourseCollection extends ResourceCollection
             return [
                 'id' => $course->id,
                 'title' => $course->title,
+                'children' => $course->children,
                 'description' => $course->description,
                 'content' => $course->content,
                 'video' => $course->video,
@@ -21,7 +22,7 @@ class CourseCollection extends ResourceCollection
                 'teacherId' => $course->teacherId,
                 'categoryName' => $course->categoryName,
                 'tag_names' => $course->tags->pluck('name')->toArray(),
-                'createdAt' => $course->createdAt,
+                'createdAt' => $course->created_at
             ];
         });
     }
