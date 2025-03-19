@@ -2,47 +2,62 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuid, HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $keyType = "string";
+    public $incrementing = false;
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'google_id',
+        'avatar',
+        'role',
+        'position',
+        'website',
+        'bio',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+ 
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+    
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'course_user', 'student_id', 'course_id');
+    }
+     
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+     
+    public function isTeacher()
+    {
+        return $this->role === 'teacher';
     }
 }
