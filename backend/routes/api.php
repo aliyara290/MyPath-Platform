@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\EnrolmentsController;
 use App\Http\Controllers\V1\Auth\AuthController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
 use App\Http\Controllers\V1\Auth\ResetPasswordController;
@@ -37,5 +38,7 @@ Route::group(["prefix" => "v1"], function () {
         Route::apiResource("/courses", CourseController::class);
         Route::apiResource("/tags", TagController::class);
         Route::apiResource("/videos", VideoController::class);
+        Route::post("/course/{id}/enroll", [EnrolmentsController::class, "store"]);
+        Route::post("/user/courses", [EnrolmentsController::class, "index"]);
     });
 });

@@ -60,4 +60,8 @@ class User extends Authenticatable
     {
         return $this->role === 'teacher';
     }
+
+    public function users() {
+        return $this->belongsToMany(User::class, "user_id");
+    }
 }
