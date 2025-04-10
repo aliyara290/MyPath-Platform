@@ -7,6 +7,7 @@ use App\Http\Requests\V1\StoreCourseRequest;
 use App\Http\Requests\V1\UpdateCourseRequest;
 use App\Interfaces\CourseInterface;
 use App\Models\Course;
+use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 
 class CourseController extends Controller
@@ -64,7 +65,7 @@ class CourseController extends Controller
      *     @OA\Response(response=400, description="Invalid request")
      * )
      */
-    
+
     public function store(StoreCourseRequest $request)
     {
         return $this->courseInterface->storeCourse($request);
@@ -153,5 +154,40 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         return $this->courseInterface->deleteCourse($course);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/courses/search",
+     *     summary="Search courses by name, category, and tags",
+     *     tags={"Course"},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         required=false,
+     *         description="Course name to search for",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="query",
+     *         required=false,
+     *         description="Category ID",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         required=false,
+     *         description="Comma-separated tag IDs",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=400, description="Invalid request")
+     * )
+     */
+    public function search(Request $request)
+    {
+        return $this->courseInterface->searchCourses($request);
     }
 }

@@ -21,16 +21,7 @@ class CourseRepository implements CourseInterface
     public function getCourses()
     {
         try {
-            $courses = Course::leftJoin('categories', "courses.category_id", "=", "categories.id")
-                ->leftJoin("course_tag", "courses.id", "=", "course_tag.course_id")
-                ->leftJoin("tags", "course_tag.tag_id", "=", "tags.id")
-                ->select(
-                    "courses.*",
-                    "categories.name as categoryName",
-                    DB::raw("GROUP_CONCAT(DISTINCT tags.name ORDER BY tags.name SEPARATOR ',') as tag_names")
-                )
-                ->groupBy("courses.id", "categories.name")
-                ->orderBy("courses.id", "DESC")
+            $courses = Course::with(["videos", "tags"])
                 ->paginate(8);
 
             $courses->getCollection()->transform(function ($course) {
@@ -165,4 +156,58 @@ class CourseRepository implements CourseInterface
             );
         }
     }
+
+    // In CourseRepository.php
+public function searchCourses($request)
+{
+    try {
+        $query = Course::leftJoin('categories', "courses.category_id", "=", "categories.id")
+            ->leftJoin("course_tag", "courses.id", "=", "course_tag.course_id")
+            ->leftJoin("tags", "course_tag.tag_id", "=", "tags.id")
+            ->select(
+                "courses.*",
+                "categories.name as categoryName",
+                DB::raw("GROUP_CONCAT(DISTINCT tags.name ORDER BY tags.name SEPARATOR ',') as tag_names")
+            )
+            ->groupBy("courses.id", "categories.name");
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('courses.title', 'LIKE', '%' . $request->name . '%');
+        }
+
+        if ($request->has('category') && !empty($request->category)) {
+            $query->where('courses.category_id', $request->category);
+        }
+
+        if ($request->has('tags') && !empty($request->tags)) {
+            $tagIds = explode(',', $request->tags);
+            $query->whereHas('tags', function($q) use ($tagIds) {
+                $q->whereIn('tags.id', $tagIds);
+            });
+        }
+
+        $courses = $query->orderBy("courses.id", "DESC")->paginate(8);
+
+        $courses->getCollection()->transform(function ($course) {
+            $course->tag_names = $course->tag_names ? explode(',', $course->tag_names) : [];
+            return $course;
+        });
+
+        if ($courses->isEmpty()) {
+            return response()->json(["message" => "No courses found"]);
+        }
+
+        $response = [
+            'courses' => new CourseCollection($courses)
+        ];
+
+        return response()->json($response);
+    } catch (Exception $e) {
+        return $this->error(
+            '',
+            500,
+            'Error searching courses: ' . $e->getMessage()
+        );
+    }
+}
 }
