@@ -28,7 +28,6 @@ class UpdateCourseRequest extends FormRequest
             "tags" => ["required", "array"],
             "tags.*" => ["exists:tags,id"],
             "duration" => ["required"],
-            "video" => ["string"],
             "cover" => ["string"],
             "level" => ["required", "string"],
             "categoryId" => ["required", "string"],

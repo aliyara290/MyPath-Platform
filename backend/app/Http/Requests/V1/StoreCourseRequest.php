@@ -28,11 +28,10 @@ class StoreCourseRequest extends FormRequest
             "tags" => ["required", "array"],
             "tags.*" => ["exists:tags,id"],
             "duration" => ["required", "integer"],
-            "video" => ["string"],
             "cover" => ["required", "string"],
             "level" => ["required", "string", "in:advanced,beginner,intermediate"],
             "categoryId" => ["required", "string", "exists:categories,id"],
-            "teacherId" => ["required", "string"],
+            "teacherId" => ["required", "string", "exists:users,id"],
         ];
     }
 }

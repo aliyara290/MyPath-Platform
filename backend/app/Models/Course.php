@@ -20,15 +20,30 @@ class Course extends Model
         "title",
         "description",
         "content",
-        "video",
         "cover",
         "duration",
         "level",
-        // "teacher_id",
+        "teacher_id",
         "category_id",
     ];
 
     public function tags(): BelongsToMany {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function users() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function categories() {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function videos() {
+        return $this->hasMany(Video::class);
+    }
+
+    public function enrolments() {
+        return $this->belongsToMany(Enrolments::class, "course_id");
     }
 }

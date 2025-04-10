@@ -9,11 +9,14 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Traits\HttpResponses;
 use Exception;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Gate;
 
 class CourseRepository implements CourseInterface
 {
-    use HttpResponses;
+    use HttpResponses, AuthorizesRequests;
 
     public function getCourses()
     {
@@ -29,20 +32,20 @@ class CourseRepository implements CourseInterface
                 ->groupBy("courses.id", "categories.name")
                 ->orderBy("courses.id", "DESC")
                 ->paginate(8);
-    
+
             $courses->getCollection()->transform(function ($course) {
                 $course->tag_names = $course->tag_names ? explode(',', $course->tag_names) : [];
                 return $course;
             });
-    
+
             if ($courses->isEmpty()) {
                 return response()->json(["message" => "No courses to show!"]);
             }
-    
+
             $response = [
                 'courses' => new CourseCollection($courses)
             ];
-    
+
             return response()->json($response);
         } catch (Exception $e) {
             return $this->error(
@@ -72,12 +75,11 @@ class CourseRepository implements CourseInterface
     public function storeCourse($request)
     {
         try {
-            // dd("hello");
+
             $course = Course::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'content' => $request->content,
-                'video' => $request->video,
                 'cover' => $request->cover,
                 'duration' => $request->duration,
                 'level' => $request->level,
@@ -96,13 +98,24 @@ class CourseRepository implements CourseInterface
             return $this->error(
                 '',
                 500,
-                'Failed to create course'
+                $e
             );
         }
     }
     public function updateCourse($request, $course)
     {
         try {
+
+            // if (!Gate::allows("edit-course", $course)) {
+            //     return response()->json(["message" => "access denied!"]);
+            // }
+            if(!$this->authorize('update', $course)) {
+                return $this->error(
+                    "Access denied",
+                    403
+                );
+            }
+             
             $course = Course::find($course)->first();
             if (!$course) {
                 return response()->json(["message" => "Course not found!"]);
@@ -111,7 +124,6 @@ class CourseRepository implements CourseInterface
                 'title' => $request->title,
                 'description' => $request->description,
                 'content' => $request->content,
-                'video' => $request->video,
                 'cover' => $request->cover,
                 'duration' => $request->duration,
                 'level' => $request->level,
@@ -128,8 +140,8 @@ class CourseRepository implements CourseInterface
         } catch (Exception $e) {
             return $this->error(
                 '',
-                'Failed to update course',
-                500
+                500,
+                $e,
             );
         }
     }
