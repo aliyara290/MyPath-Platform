@@ -11,6 +11,8 @@ class CourseCollection extends ResourceCollection
         return $this->collection->map(function ($course) {
             return [
                 'id' => $course->id,
+                "videos" => $course->videos,
+                "tags" => $course->tags,
                 'title' => $course->title,
                 'children' => $course->children,
                 'description' => $course->description,
