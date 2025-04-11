@@ -17,7 +17,6 @@ const Home = () => {
           courses.getAll(),
           categories.getAll(),
         ]);
-
         setCoursesList(coursesResponse.data.courses);
         setCategoriesList(categoriesResponse.data.data);
         setLoading(false);
@@ -27,7 +26,6 @@ const Home = () => {
         console.error("Error fetching data:", err);
       }
     };
-
     fetchData();
   }, []);
 
@@ -35,7 +33,6 @@ const Home = () => {
     selectedCategory === "all"
       ? coursesList
       : coursesList.filter((course) => course.category_id === selectedCategory);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -43,7 +40,6 @@ const Home = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="text-center py-10">
@@ -66,36 +62,6 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="mb-8">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2 rounded-full ${
-                selectedCategory === "all"
-                  ? "bg-primary-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              } transition-colors duration-200`}
-            >
-              All Courses
-            </button>
-
-            {categoriesList.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-full ${
-                  selectedCategory === category.id
-                    ? "bg-primary-600 text-white"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                } transition-colors duration-200`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Courses Grid */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
@@ -179,7 +145,6 @@ const Home = () => {
           )}
         </div>
 
-        {/* Admin Action Link */}
         <div className="mt-12 text-center">
           <Link
             to="/admin/courses"

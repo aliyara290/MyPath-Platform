@@ -1,3 +1,4 @@
+// frontend/src/routes/AppRoutes.jsx
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from '../pages/home/Home';
@@ -7,6 +8,7 @@ import CoursesManagement from '../pages/admin/CoursesManagement';
 import CategoriesManagement from '../pages/admin/CategoriesManagement';
 import TagsManagement from '../pages/admin/TagsManagement';
 import CourseDetail from '../pages/courses/CourseDetail';
+import CourseSearch from '../pages/courses/CourseSearch';
 // import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
@@ -14,7 +16,10 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Layouts />}>
         <Route index element={<Home />} />
-        <Route path="courses/:id" element={<CourseDetail />} />
+        <Route path="courses">
+          <Route path="search" element={<CourseSearch />} />
+          <Route path=":id" element={<CourseDetail />} />
+        </Route>
       </Route>
 
       <Route path="/admin" element={<AdminLayout />}>

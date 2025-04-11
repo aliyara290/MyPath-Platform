@@ -1,15 +1,15 @@
+// frontend/src/services/api.js
 import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:8000/api/v1",
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
 });
 
 export default api;
-
 
 export const categories = {
   getAll: () => api.get("/categories"),
@@ -25,6 +25,7 @@ export const courses = {
   create: (data) => api.post("/courses", data),
   update: (id, data) => api.put(`/courses/${id}`, data),
   delete: (id) => api.delete(`/courses/${id}`),
+  search: (params) => api.get("/courses/search", { params }),
 };
 
 export const tags = {
