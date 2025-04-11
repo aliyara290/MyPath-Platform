@@ -156,8 +156,6 @@ class CourseRepository implements CourseInterface
             );
         }
     }
-
-    // In CourseRepository.php
 public function searchCourses($request)
 {
     try {
@@ -175,15 +173,19 @@ public function searchCourses($request)
             $query->where('courses.title', 'LIKE', '%' . $request->name . '%');
         }
 
+        // Search by category name, handle URL encoded spaces
         if ($request->has('category') && !empty($request->category)) {
-            $query->where('courses.category_id', $request->category);
+            // URL decode the category to handle both + and %20 encoding for spaces
+            $categoryName = urldecode($request->category);
+            $query->where('categories.name', $categoryName);
         }
 
-        if ($request->has('tags') && !empty($request->tags)) {
-            $tagIds = explode(',', $request->tags);
-            $query->whereHas('tags', function($q) use ($tagIds) {
-                $q->whereIn('tags.id', $tagIds);
-            });
+        // Search by tag name, handle URL encoded spaces
+        if ($request->has('tag') && !empty($request->tag)) {
+            // URL decode the tag to handle both + and %20 encoding for spaces
+            $tagName = urldecode($request->tag);
+            $query->whereRaw("FIND_IN_SET(?, tags.name) > 0", [$tagName])
+                ->orWhere('tags.name', $tagName);
         }
 
         $courses = $query->orderBy("courses.id", "DESC")->paginate(8);

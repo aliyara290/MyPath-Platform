@@ -17,32 +17,31 @@ class CourseSeeder extends Seeder
     {
         $programmingCategory = Category::where('name', 'Programming')->first();
         $webDevCategory = Category::where('name', 'Web Development')->first();
-        $frontendCategory = Category::where('name', 'Frontend')->first();
-        $backendCategory = Category::where('name', 'Backend')->first();
-        $mobileCategory = Category::where('name', 'Mobile Development')->first();
-        $dataCategory = Category::where('name', 'Data Science')->first();
+        $frontendCategory = Category::where('name', 'Mobile Development')->first();
+        $backendCategory = Category::where('name', 'Data Science')->first();
+        $mobileCategory = Category::where('name', 'Design')->first();
+        $dataCategory = Category::where('name', 'Business')->first();
 
         $jsTag = Tag::where('name', 'JavaScript')->first();
         $reactTag = Tag::where('name', 'React')->first();
-        $vueTag = Tag::where('name', 'Vue')->first();
+        $vueTag = Tag::where('name', 'IOS')->first();
         $laravelTag = Tag::where('name', 'Laravel')->first();
         $pythonTag = Tag::where('name', 'Python')->first();
-        $phpTag = Tag::where('name', 'PHP')->first();
-        $nodeTag = Tag::where('name', 'Node.js')->first();
+        $phpTag = Tag::where('name', 'PostgreSQL')->first();
+        $nodeTag = Tag::where('name', 'Azure')->first();
         $mobileTag = Tag::where('name', 'Mobile')->first();
         $flutterTag = Tag::where('name', 'Flutter')->first();
-        $reactNativeTag = Tag::where('name', 'React Native')->first();
+        $reactNativeTag = Tag::where('name', 'DevOps')->first();
 
         $teacher = User::first();
         $teacherId = $teacher ? $teacher->id : null;
-
         $courses = [
             [
                 'title' => 'JavaScript Fundamentals',
                 'description' => 'Learn the basics of JavaScript programming',
                 'content' => 'This course covers all the fundamentals of JavaScript programming language.',
                 'cover' => 'https://example.com/images/js-cover.jpg',
-                'duration' => 120, // in minutes
+                'duration' => 120,
                 'level' => 'beginner',
                 'teacher_id' => $teacherId,
                 'category_id' => $programmingCategory->id,
@@ -130,7 +129,7 @@ class CourseSeeder extends Seeder
         foreach ($courses as $courseData) {
             $tags = $courseData['tags'];
             unset($courseData['tags']);
-            
+
             $course = Course::create($courseData);
             $course->tags()->attach($tags);
         }

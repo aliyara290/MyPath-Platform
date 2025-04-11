@@ -24,7 +24,7 @@ class TagRepository implements TagInterface
             if ($tags->isEmpty()) {
                 return response()->json(["message" => "No tags to show!"], 404);
             }
-            return new TagCollection(Tag::paginate(8));
+            return new TagCollection(Tag::paginate(20));
         } catch (Exception $e) {
             return $this->error(
                 '',
